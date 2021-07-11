@@ -243,10 +243,21 @@ e. Si la primera medida fue a las 00:00. ¿A qué hora del día se alcanzó la c
 
 Solución:
 ```{r}
-which(conc == max(conc))
+# Creaamos una secuencia de datos de fecha con inicio en la hora pedida:
+date1 <- seq(
+  as.POSIXct("2021-01-01 00:00"),
+  length.out = length(conc),
+  by = "5 min"
+)
+
+#Creamos un data frame con los datos de concentracion de plomo y las fechas 
+df03 <- data.frame(conc, date1)
+
+#Consultamos cual es el valor maximo de concentracion y a su vez nos trae el dato de la hora en que fue tomada
+df03[conc == max(conc),]
 ```
 
-###Parte 2
+### Parte 2
 
 1. Piden graficar los puntos (1,1), (2,4), (3,6), (4,8), (5,25), (6,36), (7,49), (8,64), (9,81), (10,100).
 
@@ -319,6 +330,8 @@ b.
 $$
 A-B
 $$
+Los ejercicios 7a, y 7b no se pueden operar debido a que tienen dimensiones diferentes.
+
 c.
 $$
 3B
@@ -337,13 +350,27 @@ Solución:
 B1%*%A1
 ```
 
-8. Piden crear una función para calcular P^6.
+8. Piden crear una función para calcular $P^6$.
 $$
 P=
 \begin{pmatrix}
 1&2&3\\-2&4&-2\\1&0&1
 \end{pmatrix}
 $$
+Solución:
+```{r}
+p = matrix(c(1,2,3,-2,4,-2,1,0,1), nrow = 3, byrow = T)
+
+f2 <- function(x,k){
+  r <- diag(dim(x)[2])
+  for(i in 1:k){
+    r <- r%*%x
+  }
+  r
+}
+f2(p,6)
+```
+
 9. Piden resolver el sistema de ecuaciones.
 $$
 3x-y+z=-1\\
@@ -415,5 +442,145 @@ y2 <- matrix(c(0,0,1,1,3), nrow = 5, byrow = F)
 solve(t(x2)%*%x2)%*%t(x2)%*%y2
 ```
 
+13. Piden cargar los vectores **year** y **co2** con el siguiente código:
+```{r}
+data("co2")
+means = aggregate(co2, FUN=mean)
+year = as.vector(time(means))
+co2 = as.vector(means)
+```
+- El vector **co2** contiene medidas de CO<sub>2</sub> en la atmósfera, en unidades *ppm*, durante el periodo 1959-1997. El vector **year** contiene sus años correspondientes.
+- Calcular un vector de diferencias de CO<sub>2</sub> entre años consecutivos, que sería:
+CO<sub>2</sub> en 1960 menos CO<sub>2</sub> en 1959
+CO<sub>2</sub> en 1961 menos CO<sub>2</sub> en 1960
+y así sucesivamente...
 
+Solución:
+```{r}
+#df_co2 <- data.frame(year = year, co2 = co2) %>%
+#  mutate(co2_2 = lag(co2), dif_co2 = co2 - co2_2)
+#vect_diferencia <- df_co2$dif_co2[2:39]
+#vect_diferencia
+```
 
+- Crear un **plot** con líneas y puntos mostrando las diferencias consecutivas de CO<sub>2</sub> en función del tiempo (1960, 1961, etc...), en **negrita**
+
+Solución:
+```{r}
+#plot(x = df_co2$year[2:39], y = vect_diferencia, xlab = "Año", ylab = "Variación de CO2", 
+#     main = "Diferencia de CO2 & tiempo", type = "o", pch = 16)
+```
+
+- La diferencia de concentración de CO<sub>2</sub> entre 2020 y 2019 fue igual a 2.64. Agregar un punto rojo representando esa diferencia al plot ya creado (usar una forma diferentes como **pch = 4**)
+
+Solución:
+```{r}
+#plot(x = df_co2$year[2:39], y = vect_diferencia, xlab = "Años", ylab = "Variación de CO2", 
+#     main = "Diferencia de CO2 & tiempo", type = "o", pch = 16, xlim = c(1960,2020), 
+#     ylim = c(0,3))
+#points(2020, 2.64, pch = 4, col = "red")
+```
+
+14. Piden:
+- Leer el archivo **rainfall.csv** como un **data.frame**
+- Calcula e imprime un vector con los nombres de las estaciones donde al menos uno de los meses tiene una precipitación superior a 180mm.
+
+Solución:
+```{r}
+#names_est <- dplyr::select(df_rain, sep:apr, name) %>% 
+#  dplyr::filter(sep > 180 | oct > 180 | nov > 180 | dec > 180 |
+#                  jan > 180 | feb > 180 |mar >180) %>%
+#  dplyr::select(name)
+#names_est <- as.vector(names_est$name)
+#names_est
+```
+
+### Parte 3
+
+15. Se tiene un conjunto de datos de precipitación diaria (período 1980-2013) de ciertas estaciones metereológicas (**raingaugeDataset.csv**), donde cada una de las estaciones están asociadas a un código único (**p.e. qc00000208**). Asimismo, se tiene una lista con los nombres, códigos, coordendas y elevación de cada una de las estaciones (**listRaingauge.csv**)
+
+**GRUPO 04:** MORROPÓN
+Solicita:
+a. Determinar la cantidad de **missing values** de la serie de tiempo a paso diario.
+
+Solución:
+```{r}
+#data2 <- as_tibble(read.csv("ProgramacionR-master/data/raingaugeDataset.csv"))
+#names(data2)
+#data3 <- as_tibble(read.csv("ProgramacionR-master/data/listRaingauge.csv"))
+#names(data3)
+
+#est <- dplyr::select(data3, NOM_EST, CODIGO) %>% 
+#  dplyr::filter(NOM_EST == "MORROPON")
+
+#ejerc1 <- data2 %>% dplyr::mutate(date = as.Date(date, format = "%d/%m/%Y")) %>%
+#   rename(pp = qc00000235) %>%
+#   dplyr::select(date, pp) %>%
+#   group_by(date) %>%
+#   mutate(missVal = sum(is.na(pp)))
+# ejerc1
+```
+
+b. Calcule la serie de tiempo de precipitación **acumulada mensual** (si el # de días con missing values, en un mes, supera el 10%, la precipitación acumulada mensual será considerado como un NA).
+Determine la cantidad de missing values de la serie de tiempo a paso mensual.
+
+Solución:
+```{r}
+# ejerc2 <- data2 %>% dplyr::mutate(date = as.Date(date, format = "%d/%m/%Y")) %>% 
+#   rename(pp = qc00000235) %>%
+#   dplyr::select(date, pp) %>%
+#   group_by(date = str_sub(date, 1, 7)) %>% 
+#   mutate(missVal = sum(is.na(pp)) * 100 / n()) %>%   
+#   summarize(
+#     pp = sum(pp , na.rm = T),
+#     missVal = unique(missVal)
+#   ) %>% 
+#   mutate(
+#     pp = ifelse(missVal >= 10 , NA, pp),
+#     date = as.Date(sprintf("%1$s-01", date)), #Para agregar el 01 a la fecha
+#     month= str_sub(date, 6, 7)
+#   )
+```
+
+c. Determine la cantidad de **missing values** de la serie de tiempo a paso mensual.
+
+Solución:
+```{r}
+#sum(is.na(ejerc2$pp))
+```
+d. Cree una función que calcule, a partir de los datos de precipitación mensual, la **climatología (Ene-Dic)** para el **período 1980-2010**.
+
+Solución:
+```{r}
+# ejerc4 <- function(datax){
+#   rango <- filter(datax, date >= "1980-01-01" & date <="2010-12-31") 
+#   monthx <- group_by(rango, month)
+#   mediax <- summarise(monthx, ppmean= mean(pp, na.rm = T))
+#   return (mediax)
+# }
+# ejerc4(ejerc2)
+```
+e. Plotear (boxplot) la variabilidad de los valores mensuales (Ene-Dic) para el período 1980-2013.
+
+Solución:
+```{r, out.width= "70%", out.height="70%", fig.align='center'}
+# ggplot(ejerc2, aes(month, pp, fill=month)) + 
+#   ggtitle("Variabilidad de los valores mensuales entre 1980-2013")+
+#   labs(x = "Meses", 
+#        y = "Precipitación")+
+#   geom_boxplot()+
+#   theme_bw() + 
+#   theme(
+#     panel.background = element_rect(fill = "lightblue"),
+#     panel.grid.minor = element_line(linetype = "dotted")
+#   )+
+#   scale_x_discrete(
+#     labels = month.abb,
+#   )+
+#   labs(caption = "Interpretación: Se observa que entre los meses de enero y abril hay mayor
+#        variabilidad de los datos de precipitación siendo el mes de marzo el 
+#        más resaltante, y los meses de mayo a diciembre tienden mantener valores
+#        nulos ya que es temporada seca. También se puede observar que durante
+#        todos los meses se presentan valores atípicos debido a errores de lectura
+#        o anomalías")
+```

@@ -911,10 +911,36 @@ co2 = as.vector(means)</code></pre>
 <li>Cree una función que calcule, a partir de los datos de precipitación mensual, la <strong>climatología (Ene-Dic)</strong> para el <strong>período 1980-2010</strong>.</li>
 </ol>
 <p>Solución:</p>
+<pre class="r"><code># ejerc4 &lt;- function(datax){
+#   rango &lt;- filter(datax, date &gt;= &quot;1980-01-01&quot; &amp; date &lt;=&quot;2010-12-31&quot;) 
+#   monthx &lt;- group_by(rango, month)
+#   mediax &lt;- summarise(monthx, ppmean= mean(pp, na.rm = T))
+#   return (mediax)
+# }
+# ejerc4(ejerc2)</code></pre>
 <ol start="5" style="list-style-type: lower-alpha">
 <li>Plotear (boxplot) la variabilidad de los valores mensuales (Ene-Dic) para el período 1980-2013.</li>
 </ol>
 <p>Solución:</p>
+<pre class="r"><code># ggplot(ejerc2, aes(month, pp, fill=month)) + 
+#   ggtitle(&quot;Variabilidad de los valores mensuales entre 1980-2013&quot;)+
+#   labs(x = &quot;Meses&quot;, 
+#        y = &quot;Precipitación&quot;)+
+#   geom_boxplot()+
+#   theme_bw() + 
+#   theme(
+#     panel.background = element_rect(fill = &quot;lightblue&quot;),
+#     panel.grid.minor = element_line(linetype = &quot;dotted&quot;)
+#   )+
+#   scale_x_discrete(
+#     labels = month.abb,
+#   )+
+#   labs(caption = &quot;Interpretación: Se observa que entre los meses de enero y abril hay mayor
+#        variabilidad de los datos de precipitación siendo el mes de marzo el 
+#        más resaltante, y los meses de mayo a diciembre tienden mantener valores
+#        nulos ya que es temporada seca. También se puede observar que durante
+#        todos los meses se presentan valores atípicos debido a errores de lectura
+#        o anomalías&quot;)</code></pre>
 </div>
 </div>
 
